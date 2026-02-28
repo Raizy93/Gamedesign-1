@@ -1,41 +1,35 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/index.html b/index.html
-index c49f7c951a7970b41ef9c91fa2b93e63a2519381..5e1519787dd4e17e9a817503f0ff105442bd6ce5 100644
+index c49f7c951a7970b41ef9c91fa2b93e63a2519381..fe4908b96a96e47bfc35ffb585bc1e3cd456c007 100644
 --- a/index.html
 +++ b/index.html
-@@ -1,16 +1,33 @@
+@@ -1,16 +1,26 @@
  <!doctype html>
  <html lang="nl">
  <head>
-   <meta charset="utf-8" />
-   <meta name="viewport" content="width=device-width,initial-scale=1" />
+-  <meta charset="utf-8" />
+-  <meta name="viewport" content="width=device-width,initial-scale=1" />
 -  <title>Krantendetective - start</title>
--  <link rel="stylesheet" href="css/style.css">
-+  <title>Klassieke Snake</title>
-+  <link rel="stylesheet" href="css/style.css" />
++  <meta charset="utf-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1">
++  <title>Snake</title>
+   <link rel="stylesheet" href="css/style.css">
  </head>
  <body>
 -  <h1>Krantendetective — test</h1>
 -  <div id="app">Laadt...</div>
-+  <main class="container">
-+    <h1>🐍 Klassieke Snake</h1>
-+    <p class="subtitle">Gebruik de pijltjestoetsen of WASD om te bewegen.</p>
++  <main class="game-shell">
++    <h1>Snake</h1>
 +
-+    <section class="hud" aria-label="Spelinformatie">
-+      <div>Score: <strong id="score">0</strong></div>
-+      <div>Highscore: <strong id="highscore">0</strong></div>
-+      <button id="restart" type="button">Opnieuw starten</button>
-+    </section>
++    <div class="hud" aria-label="scorebord">
++      <p>Score: <strong id="score">0</strong></p>
++      <p>Highscore: <strong id="highscore">0</strong></p>
++      <button id="restart" type="button">Herstart</button>
++    </div>
 +
-+    <canvas
-+      id="game"
-+      width="400"
-+      height="400"
-+      aria-label="Snake speelveld"
-+      role="img"
-+    ></canvas>
++    <canvas id="board" width="480" height="480" aria-label="Snake speelveld"></canvas>
 +
-+    <p id="message" class="message">Druk op een richtingstoets om te starten.</p>
++    <p id="status">Druk op een pijltjestoets of WASD om te starten.</p>
 +  </main>
  
 -  <script src="js/data.js"></script>
