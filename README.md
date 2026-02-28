@@ -1,25 +1,28 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/README.md b/README.md
-index 8b137891791fe96927ad78e64b0aad7bded08bdc..da21152a5e3eb8a6522a1c3a97e77dc724a0b03d 100644
+index 8b137891791fe96927ad78e64b0aad7bded08bdc..d524a8f1ac7f69eeca03c1934332a2b3f44d350f 100644
 --- a/README.md
 +++ b/README.md
-@@ -1 +1,16 @@
-+# Klassieke Snake
+@@ -1 +1,19 @@
++# Snake (klassieke versie)
  
-+Een eenvoudige browserversie van de klassieke Snake game, gebouwd met HTML, CSS en vanilla JavaScript.
++Een volledig opnieuw opgebouwde klassieke Snake-game in pure HTML/CSS/JavaScript.
 +
-+## Spelen
++## Starten
 +
-+1. Open `index.html` in je browser.
-+2. Gebruik de pijltjestoetsen of `WASD` om de slang te besturen.
-+3. Eet het eten om punten te scoren en je highscore te verbeteren.
-+4. Raak geen muur of je eigen lichaam.
++Open `index.html` in een browser.
 +
-+## Features
++## Besturing
 +
-+- Klassieke Snake gameplay op een 20x20 grid.
-+- Score + highscore (opgeslagen via `localStorage`).
-+- Herstartknop en duidelijke game-over melding.
++- Pijltjestoetsen
++- WASD
++
++## Regels
++
++- Eet rood voedsel om te groeien en punten te krijgen.
++- Bots niet tegen muren.
++- Bots niet tegen je eigen lichaam.
++- Je highscore wordt lokaal opgeslagen.
  
 EOF
 )
