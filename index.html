@@ -1,16 +1,47 @@
-<!doctype html>
-<html lang="nl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Krantendetective - start</title>
-  <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-  <h1>Krantendetective — test</h1>
-  <div id="app">Laadt...</div>
-
-  <script src="js/data.js"></script>
-  <script src="js/script.js"></script>
-</body>
-</html>
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/index.html b/index.html
+index c49f7c951a7970b41ef9c91fa2b93e63a2519381..5e1519787dd4e17e9a817503f0ff105442bd6ce5 100644
+--- a/index.html
++++ b/index.html
+@@ -1,16 +1,33 @@
+ <!doctype html>
+ <html lang="nl">
+ <head>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width,initial-scale=1" />
+-  <title>Krantendetective - start</title>
+-  <link rel="stylesheet" href="css/style.css">
++  <title>Klassieke Snake</title>
++  <link rel="stylesheet" href="css/style.css" />
+ </head>
+ <body>
+-  <h1>Krantendetective — test</h1>
+-  <div id="app">Laadt...</div>
++  <main class="container">
++    <h1>🐍 Klassieke Snake</h1>
++    <p class="subtitle">Gebruik de pijltjestoetsen of WASD om te bewegen.</p>
++
++    <section class="hud" aria-label="Spelinformatie">
++      <div>Score: <strong id="score">0</strong></div>
++      <div>Highscore: <strong id="highscore">0</strong></div>
++      <button id="restart" type="button">Opnieuw starten</button>
++    </section>
++
++    <canvas
++      id="game"
++      width="400"
++      height="400"
++      aria-label="Snake speelveld"
++      role="img"
++    ></canvas>
++
++    <p id="message" class="message">Druk op een richtingstoets om te starten.</p>
++  </main>
+ 
+-  <script src="js/data.js"></script>
+   <script src="js/script.js"></script>
+ </body>
+ </html>
+ 
+EOF
+)
