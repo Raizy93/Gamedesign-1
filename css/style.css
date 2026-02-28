@@ -1,15 +1,11 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/css/style.css b/css/style.css
-index 7584d9d4dbdc069b494bceece387f288e79784c2..68513879fed279f9d201c6258c1de1a1eb38f0be 100644
+index 7584d9d4dbdc069b494bceece387f288e79784c2..13f1e870ab74c08d15eca9e3a3e6c61427c4cd6c 100644
 --- a/css/style.css
 +++ b/css/style.css
-@@ -1,2 +1,71 @@
+@@ -1,2 +1,61 @@
 -body { font-family: Arial, sans-serif; padding: 20px; }
 -#app { border: 1px solid #ddd; padding: 10px; min-height: 120px; }
-+:root {
-+  color-scheme: dark;
-+}
-+
 +* {
 +  box-sizing: border-box;
 +}
@@ -20,62 +16,56 @@ index 7584d9d4dbdc069b494bceece387f288e79784c2..68513879fed279f9d201c6258c1de1a1
 +  display: grid;
 +  place-items: center;
 +  font-family: Arial, sans-serif;
-+  background: #101820;
-+  color: #f4f4f4;
++  background: #111827;
++  color: #f9fafb;
 +}
 +
-+.container {
-+  width: min(92vw, 460px);
++.game-shell {
++  width: min(94vw, 560px);
 +  text-align: center;
 +}
 +
 +h1 {
-+  margin: 0 0 0.25rem;
-+}
-+
-+.subtitle {
-+  margin: 0 0 1rem;
-+  color: #b6c0cc;
++  margin: 0 0 12px;
 +}
 +
 +.hud {
 +  display: flex;
++  flex-wrap: wrap;
 +  align-items: center;
-+  justify-content: space-between;
-+  gap: 0.75rem;
-+  margin-bottom: 0.75rem;
-+  font-size: 1rem;
++  justify-content: center;
++  gap: 14px;
++  margin-bottom: 14px;
++}
++
++.hud p {
++  margin: 0;
 +}
 +
 +#restart {
 +  border: 0;
-+  padding: 0.45rem 0.8rem;
-+  border-radius: 6px;
-+  background: #3aa655;
-+  color: #fff;
++  border-radius: 8px;
++  padding: 8px 12px;
 +  font-weight: 700;
 +  cursor: pointer;
++  background: #22c55e;
++  color: #052e16;
 +}
 +
-+#restart:hover {
-+  filter: brightness(1.1);
++#board {
++  width: min(94vw, 480px);
++  height: min(94vw, 480px);
++  border: 3px solid #374151;
++  background: #1f2937;
++  display: block;
++  margin: 0 auto;
 +}
 +
-+#game {
-+  width: 100%;
-+  max-width: 400px;
-+  aspect-ratio: 1;
-+  background: #182430;
-+  border: 3px solid #2f4152;
-+  border-radius: 10px;
-+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-+}
-+
-+.message {
-+  min-height: 1.5rem;
-+  margin-top: 0.75rem;
-+  color: #ffd166;
-+  font-weight: 600;
++#status {
++  margin-top: 12px;
++  min-height: 24px;
++  color: #fbbf24;
++  font-weight: 700;
 +}
  
 EOF
