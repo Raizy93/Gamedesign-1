@@ -1,114 +1,125 @@
  (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
 diff --git a/js/script.js b/js/script.js
-index 85a3ae8729b3f179555c762519b5230623cd6996..3327b9b7b3178e5318f045a85c26387ade5fbbf7 100644
+index 85a3ae8729b3f179555c762519b5230623cd6996..41c80c29ef1efdd1d19888c0d7f95e44eeddbce6 100644
 --- a/js/script.js
 +++ b/js/script.js
-@@ -1,2 +1,224 @@
+@@ -1,2 +1,197 @@
 -const app = document.getElementById('app');
 -app.innerHTML = `<h2>${artikelen[0].titel}</h2><p>${artikelen[0].tekst}</p>`;
-+const canvas = document.getElementById('game');
++const canvas = document.getElementById('board');
 +const ctx = canvas.getContext('2d');
++
 +const scoreEl = document.getElementById('score');
 +const highscoreEl = document.getElementById('highscore');
-+const messageEl = document.getElementById('message');
++const statusEl = document.getElementById('status');
 +const restartBtn = document.getElementById('restart');
 +
-+const gridSize = 20;
-+const tileSize = canvas.width / gridSize;
-+const startSpeedMs = 120;
++const cells = 24;
++const cellSize = canvas.width / cells;
++const tickMs = 110;
++
++const DIRECTIONS = {
++  ArrowUp: { x: 0, y: -1 },
++  ArrowDown: { x: 0, y: 1 },
++  ArrowLeft: { x: -1, y: 0 },
++  ArrowRight: { x: 1, y: 0 },
++  w: { x: 0, y: -1 },
++  s: { x: 0, y: 1 },
++  a: { x: -1, y: 0 },
++  d: { x: 1, y: 0 }
++};
 +
 +let snake;
 +let direction;
-+let nextDirection;
++let queuedDirection;
 +let food;
 +let score;
-+let highscore = Number(localStorage.getItem('snakeHighscore') || 0);
-+let gameInterval = null;
-+let hasStarted = false;
++let timerId;
++let running;
 +
-+highscoreEl.textContent = highscore;
-+resetGame();
++let highscore = Number(localStorage.getItem('snake-highscore') || 0);
++highscoreEl.textContent = String(highscore);
++
++initGame();
 +draw();
 +
 +window.addEventListener('keydown', (event) => {
-+  const key = event.key.toLowerCase();
-+  const requestedDirection = getDirectionFromKey(key);
++  const next = DIRECTIONS[event.key] || DIRECTIONS[event.key.toLowerCase()];
 +
-+  if (!requestedDirection) {
++  if (!next) {
 +    return;
 +  }
 +
 +  event.preventDefault();
 +
-+  if (isReverse(requestedDirection, direction)) {
++  if (isOpposite(next, direction)) {
 +    return;
 +  }
 +
-+  nextDirection = requestedDirection;
++  queuedDirection = next;
 +
-+  if (!hasStarted) {
-+    startGame();
++  if (!running) {
++    startLoop();
 +  }
 +});
 +
 +restartBtn.addEventListener('click', () => {
-+  resetGame();
++  initGame();
 +  draw();
 +});
 +
-+function startGame() {
-+  hasStarted = true;
-+  messageEl.textContent = '';
-+
-+  clearInterval(gameInterval);
-+  gameInterval = setInterval(gameLoop, startSpeedMs);
-+}
-+
-+function resetGame() {
++function initGame() {
 +  snake = [
-+    { x: 9, y: 10 },
-+    { x: 8, y: 10 },
-+    { x: 7, y: 10 }
++    { x: 12, y: 12 },
++    { x: 11, y: 12 },
++    { x: 10, y: 12 }
 +  ];
-+
 +  direction = { x: 1, y: 0 };
-+  nextDirection = direction;
-+  food = spawnFood();
++  queuedDirection = direction;
++  food = randomFood();
 +  score = 0;
-+  hasStarted = false;
++  running = false;
 +
-+  scoreEl.textContent = score;
-+  messageEl.textContent = 'Druk op een richtingstoets om te starten.';
++  scoreEl.textContent = '0';
++  statusEl.textContent = 'Druk op een pijltjestoets of WASD om te starten.';
 +
-+  clearInterval(gameInterval);
++  clearInterval(timerId);
 +}
 +
-+function gameLoop() {
-+  direction = nextDirection;
++function startLoop() {
++  running = true;
++  statusEl.textContent = '';
 +
-+  const head = {
++  clearInterval(timerId);
++  timerId = setInterval(step, tickMs);
++}
++
++function step() {
++  direction = queuedDirection;
++
++  const nextHead = {
 +    x: snake[0].x + direction.x,
 +    y: snake[0].y + direction.y
 +  };
 +
-+  if (isCollision(head)) {
-+    gameOver();
++  if (hitsWall(nextHead) || hitsSelf(nextHead)) {
++    endGame();
 +    return;
 +  }
 +
-+  snake.unshift(head);
++  snake.unshift(nextHead);
 +
-+  if (head.x === food.x && head.y === food.y) {
++  if (nextHead.x === food.x && nextHead.y === food.y) {
 +    score += 1;
-+    scoreEl.textContent = score;
++    scoreEl.textContent = String(score);
 +
 +    if (score > highscore) {
 +      highscore = score;
-+      highscoreEl.textContent = highscore;
-+      localStorage.setItem('snakeHighscore', String(highscore));
++      highscoreEl.textContent = String(highscore);
++      localStorage.setItem('snake-highscore', String(highscore));
 +    }
 +
-+    food = spawnFood();
++    food = randomFood();
 +  } else {
 +    snake.pop();
 +  }
@@ -116,118 +127,80 @@ index 85a3ae8729b3f179555c762519b5230623cd6996..3327b9b7b3178e5318f045a85c26387a
 +  draw();
 +}
 +
++function endGame() {
++  clearInterval(timerId);
++  running = false;
++  statusEl.textContent = `Game over. Score: ${score}. Druk op een richtingstoets om opnieuw te spelen.`;
++}
++
++function hitsWall(part) {
++  return part.x < 0 || part.y < 0 || part.x >= cells || part.y >= cells;
++}
++
++function hitsSelf(head) {
++  return snake.some((part) => part.x === head.x && part.y === head.y);
++}
++
++function randomFood() {
++  let position;
++
++  do {
++    position = {
++      x: Math.floor(Math.random() * cells),
++      y: Math.floor(Math.random() * cells)
++    };
++  } while (snake && snake.some((part) => part.x === position.x && part.y === position.y));
++
++  return position;
++}
++
 +function draw() {
-+  ctx.fillStyle = '#0f1720';
++  ctx.fillStyle = '#111827';
 +  ctx.fillRect(0, 0, canvas.width, canvas.height);
 +
 +  drawGrid();
 +
-+  ctx.fillStyle = '#3aa655';
-+  snake.forEach((segment, index) => {
-+    const padding = index === 0 ? 1 : 2;
++  ctx.fillStyle = '#22c55e';
++  for (let i = 0; i < snake.length; i += 1) {
++    const part = snake[i];
++    const inset = i === 0 ? 1 : 2;
 +    ctx.fillRect(
-+      segment.x * tileSize + padding,
-+      segment.y * tileSize + padding,
-+      tileSize - padding * 2,
-+      tileSize - padding * 2
++      part.x * cellSize + inset,
++      part.y * cellSize + inset,
++      cellSize - inset * 2,
++      cellSize - inset * 2
 +    );
-+  });
++  }
 +
-+  ctx.fillStyle = '#ef476f';
++  ctx.fillStyle = '#ef4444';
 +  ctx.fillRect(
-+    food.x * tileSize + 2,
-+    food.y * tileSize + 2,
-+    tileSize - 4,
-+    tileSize - 4
++    food.x * cellSize + 2,
++    food.y * cellSize + 2,
++    cellSize - 4,
++    cellSize - 4
 +  );
 +}
 +
 +function drawGrid() {
-+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
++  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
 +  ctx.lineWidth = 1;
 +
-+  for (let i = 0; i <= gridSize; i += 1) {
-+    const pos = i * tileSize;
++  for (let i = 0; i <= cells; i += 1) {
++    const p = i * cellSize;
 +
 +    ctx.beginPath();
-+    ctx.moveTo(pos, 0);
-+    ctx.lineTo(pos, canvas.height);
++    ctx.moveTo(p, 0);
++    ctx.lineTo(p, canvas.height);
 +    ctx.stroke();
 +
 +    ctx.beginPath();
-+    ctx.moveTo(0, pos);
-+    ctx.lineTo(canvas.width, pos);
++    ctx.moveTo(0, p);
++    ctx.lineTo(canvas.width, p);
 +    ctx.stroke();
 +  }
 +}
 +
-+function spawnFood() {
-+  let newFood;
-+
-+  do {
-+    newFood = {
-+      x: Math.floor(Math.random() * gridSize),
-+      y: Math.floor(Math.random() * gridSize)
-+    };
-+  } while (snake?.some((segment) => segment.x === newFood.x && segment.y === newFood.y));
-+
-+  return newFood;
-+}
-+
-+function isCollision(head) {
-+  const hitWall =
-+    head.x < 0 ||
-+    head.y < 0 ||
-+    head.x >= gridSize ||
-+    head.y >= gridSize;
-+
-+  if (hitWall) {
-+    return true;
-+  }
-+
-+  return snake.some((segment) => segment.x === head.x && segment.y === head.y);
-+}
-+
-+function gameOver() {
-+  clearInterval(gameInterval);
-+  hasStarted = false;
-+  messageEl.textContent = `Game over! Eindscore: ${score}. Druk op een richtingstoets om opnieuw te spelen.`;
-+
-+  const head = snake[0];
-+  snake = [
-+    { x: head.x, y: head.y },
-+    { x: head.x - 1, y: head.y },
-+    { x: head.x - 2, y: head.y }
-+  ].filter((segment) => segment.x >= 0);
-+
-+  direction = { x: 1, y: 0 };
-+  nextDirection = direction;
-+  food = spawnFood();
-+  score = 0;
-+  scoreEl.textContent = score;
-+  draw();
-+}
-+
-+function getDirectionFromKey(key) {
-+  switch (key) {
-+    case 'arrowup':
-+    case 'w':
-+      return { x: 0, y: -1 };
-+    case 'arrowdown':
-+    case 's':
-+      return { x: 0, y: 1 };
-+    case 'arrowleft':
-+    case 'a':
-+      return { x: -1, y: 0 };
-+    case 'arrowright':
-+    case 'd':
-+      return { x: 1, y: 0 };
-+    default:
-+      return null;
-+  }
-+}
-+
-+function isReverse(next, current) {
++function isOpposite(next, current) {
 +  return next.x === -current.x && next.y === -current.y;
 +}
  
