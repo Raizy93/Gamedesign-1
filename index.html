@@ -1,16 +1,26 @@
 <!doctype html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Krantendetective - start</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slang</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>Krantendetective — test</h1>
-  <div id="app">Laadt...</div>
+  <main class="game-shell">
+    <h1>Slang</h1>
 
-  <script src="js/data.js"></script>
+    <div class="hud" aria-label="scorebord">
+      <p>Score: <strong id="score">0</strong></p>
+      <p>Highscore: <strong id="highscore">0</strong></p>
+      <button id="restart" type="button">Herstart</button>
+    </div>
+
+    <canvas id="board" width="480" height="480" aria-label="Slang speelveld"></canvas>
+
+    <p id="status">Druk op een pijltjestoets of WASD om te starten.</p>
+  </main>
+
   <script src="js/script.js"></script>
 </body>
 </html>
